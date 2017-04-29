@@ -8,14 +8,20 @@ Version:        0.13.0
 Release:        1%{?dist}
 Summary:        ARA: Ansible Analysis - Record and visualize Ansible Playbook runs
 
-# ARA is Apache v2 but Ansible plugins are GPLv3
-License:        APSLv2 and GPLv3
+License:        ASL 2.0
 URL:            https://git.openstack.org/cgit/openstack/ara
 Source0:        https://dmsimard.com/%{package_name}-%{version}.tar.gz
 #Source0:        https://pypi.io/packages/source/a/%{package_name}/%{package_name}-%{version}.tar.gz
+Source1:        ara-server.service
+Source2:        ara.cfg
+Source3:        ara.logrotate
 BuildArch:      noarch
 
+%{?systemd_requires}
+BuildRequires: systemd
+
 Requires:       python2-%{package_name} = %{version}-%{release}
+Requires:       %{package_name}-common = %{version}-%{release}
 
 %description
 ARA: Ansible Run Analysis
@@ -23,9 +29,22 @@ ARA: Ansible Run Analysis
 ARA records Ansible Playbook runs seamlessly to make them easier to visualize,
 understand and troubleshoot. It integrates with Ansible wherever you run it.
 
-# TODO:
-# - Subpackage for embedded webserver with systemd implementation
-# - Subpackage for httpd+mod_wsgi implementation
+%if 0%{?with_python3}
+%package -n %{package_name}-python3
+Summary:        %{summary}
+
+%{?systemd_requires}
+BuildRequires: systemd
+
+Requires:       python3-%{package_name} = %{version}-%{release}
+Requires:       %{package_name}-common = %{version}-%{release}
+
+%description -n %{package_name}-python3
+ARA: Ansible Run Analysis
+
+ARA records Ansible Playbook runs seamlessly to make them easier to visualize,
+understand and troubleshoot. It integrates with Ansible wherever you run it.
+%endif
 
 %package -n python2-%{package_name}
 Summary:        %{summary}
@@ -111,7 +130,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  redhat-rpm-config
 BuildRequires:  git
 # Test dependencies for %check
-BuildRequires:  ansible >= 2.1.5.0
+BuildRequires:  ansible-python3 >= 2.1.5.0
 BuildRequires:  python3-cliff
 BuildRequires:  python3-debtcollector
 BuildRequires:  python3-decorator >= 4.0.0
@@ -119,7 +138,7 @@ BuildRequires:  python3-flask
 BuildRequires:  python3-flask-migrate
 BuildRequires:  python3-flask-script
 BuildRequires:  python3-frozen-flask
-Requires:       python3-junit_xml
+BuildRequires:  python3-junit_xml
 BuildRequires:  python3-lxml
 BuildRequires:  python3-pygments
 BuildRequires:  python3-sqlalchemy
@@ -130,7 +149,7 @@ BuildRequires:  python3-XStatic-jQuery
 BuildRequires:  python3-XStatic-Patternfly
 BuildRequires:  python3-pytest
 
-Requires:       ansible >= 2.1.5.0
+Requires:       ansible-python3 >= 2.1.5.0
 Requires:       python3-cliff
 Requires:       python3-debtcollector
 Requires:       python3-decorator >= 4.0.0
@@ -171,13 +190,26 @@ understand and troubleshoot. It integrates with Ansible wherever you run it.
 This package contains the test files.
 %endif
 
-%package -n %{package_name}-doc
+%package common
+Summary:        Common files for %{package_name}
+
+Requires(pre): shadow-utils
+
+%description common
+ARA: Ansible Run Analysis
+
+ARA records Ansible Playbook runs seamlessly to make them easier to visualize,
+understand and troubleshoot. It integrates with Ansible wherever you run it.
+
+This package contains the common files.
+
+%package doc
 Summary:        Documentation for %{package_name}
 
 BuildRequires:  python-sphinx
 BuildRequires:  python-sphinx_rtd_theme
 
-%description -n %{package_name}-doc
+%description doc
 ARA: Ansible Run Analysis
 
 ARA records Ansible Playbook runs seamlessly to make them easier to visualize,
@@ -188,34 +220,88 @@ This package contains the documentation.
 %prep
 %autosetup -n %{package_name}-%{version} -S git
 
+%if 0%{?with_python3}
+rm -rf %{py3dir}
+cp -a . %{py3dir}
+%endif
+
 # Let RPM handle the requirements
 rm -f {,test-}requirements.txt
 
 %build
 %py2_build
 %if 0%{?with_python3}
+pushd %{py3dir}
 %py3_build
+popd
 %endif
 sphinx-build -W -b html doc/source doc/build/html
 
 %install
 %py2_install
 %if 0%{?with_python3}
+pushd %{py3dir}
 %py3_install
+popd
 %endif
 
+# Setup directories
+install -d -m 755 %{buildroot}%{_sysconfdir}/%{package_name}
+install -d -m 755 %{buildroot}%{_sharedstatedir}/%{package_name}
+install -d -m 755 %{buildroot}%{_localstatedir}/log/%{package_name}
+
+# Setup systemd unit file
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_unitdir}/%{package_name}-server.service
+
+# Setup default config
+install -p -D -m 640 %{SOURCE2} %{buildroot}%{_sysconfdir}/%{package_name}/%{package_name}.cfg
+
+# Setup logrotate
+install -p -D -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/logrotate.d/%{package_name}
+
 %check
-%{__python2} -m py.test
+%{__python2} -m py.test -v
 # TODO: Run python3 unit tests once ARA has fixed python3 compatibility.
+
+%pre common
+getent group %{package_name} >/dev/null || groupadd -r %{package_name}
+getent passwd %{package_name} >/dev/null || \
+    useradd -r -g %{package_name} -d %{_sharedstatedir}/%{package_name} \
+    -s /sbin/nologin -c "User for ARA" %{package_name}
+exit 0
+
+%post
+%systemd_post %{package_name}-server.service
+
+%preun
+%systemd_preun %{package_name}-server.service
+
+%postun
+%systemd_postun_with_restart %{package_name}-server.service
+
+%files
+%doc README.rst
+%license LICENSE
+%{_bindir}/ara
+%{_bindir}/ara-manage
+%{_bindir}/ara-wsgi
+%{_unitdir}/%{package_name}-server.service
+
+%if 0%{?with_python3}
+%files -n %{package_name}-python3
+%doc README.rst
+%license LICENSE
+%{_bindir}/ara
+%{_bindir}/ara-manage
+%{_bindir}/ara-wsgi
+%{_unitdir}/%{package_name}-server.service
+%endif
 
 %files -n python2-%{package_name}
 %doc README.rst
 %license LICENSE
 %{python2_sitelib}/%{package_name}
 %{python2_sitelib}/%{package_name}-*.egg-info
-%{_bindir}/ara
-%{_bindir}/ara-manage
-%{_bindir}/ara-wsgi
 %exclude %{python2_sitelib}/%{package_name}/tests
 
 %files -n python2-%{package_name}-tests
@@ -229,9 +315,6 @@ sphinx-build -W -b html doc/source doc/build/html
 %license LICENSE
 %{python3_sitelib}/%{package_name}
 %{python3_sitelib}/%{package_name}-*.egg-info
-%{_bindir}/ara
-%{_bindir}/ara-manage
-%{_bindir}/ara-wsgi
 %exclude %{python3_sitelib}/%{package_name}/tests
 
 %files -n python3-%{package_name}-tests
@@ -240,7 +323,16 @@ sphinx-build -W -b html doc/source doc/build/html
 %{python3_sitelib}/%{package_name}/tests
 %endif
 
-%files -n %{package_name}-doc
+%files common
+%doc README.rst
+%license LICENSE
+%dir %{_sysconfdir}/%{package_name}
+%config(noreplace) %attr(0640, root, %{package_name}) %{_sysconfdir}/%{package_name}/%{package_name}.cfg
+%config(noreplace) %{_sysconfdir}/logrotate.d/%{package_name}
+%dir %attr(0750, %{package_name}, %{package_name}) %{_localstatedir}/log/%{package_name}
+%dir %attr(0750, %{package_name}, %{package_name}) %{_sharedstatedir}/%{package_name}
+
+%files doc
 %doc README.rst doc/build/html
 %license LICENSE
 
