@@ -5,6 +5,7 @@ After=network.target
 
 [Service]
 Type=simple
+User=ara
 TimeoutStartSec=0
 Restart=on-failure
 RestartSec=10

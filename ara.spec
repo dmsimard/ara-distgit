@@ -231,19 +231,25 @@ rm -f {,test-}requirements.txt
 %build
 %py2_build
 %if 0%{?with_python3}
-pushd %{py3dir}
 %py3_build
-popd
 %endif
 sphinx-build -W -b html doc/source doc/build/html
 
 %install
-%py2_install
 %if 0%{?with_python3}
-pushd %{py3dir}
 %py3_install
-popd
+for f in %{buildroot}%{_bindir}/ara*; do
+    mv $f $f-%{python3_version}
+    ln -s %{_bindir}/$(basename $f)-%{python3_version} $f-3
+done
 %endif
+
+%py2_install
+for f in %{buildroot}%{_bindir}/{ara,ara-manage,ara-wsgi}; do
+    mv $f $f-%{python2_version}
+    ln -s %{_bindir}/$(basename $f)-%{python2_version} $f
+    ln -s %{_bindir}/$(basename $f)-%{python2_version} $f-2
+done
 
 # Setup directories
 install -d -m 755 %{buildroot}%{_sysconfdir}/%{package_name}
@@ -282,18 +288,17 @@ exit 0
 %files
 %doc README.rst
 %license LICENSE
-%{_bindir}/ara
-%{_bindir}/ara-manage
-%{_bindir}/ara-wsgi
+%{_bindir}/ara*
+%if 0%{?with_python3}
+%exclude %{_bindir}/ara*-3*
+%endif
 %{_unitdir}/%{package_name}-server.service
 
 %if 0%{?with_python3}
 %files -n %{package_name}-python3
 %doc README.rst
 %license LICENSE
-%{_bindir}/ara
-%{_bindir}/ara-manage
-%{_bindir}/ara-wsgi
+%{_bindir}/ara*-3*
 %{_unitdir}/%{package_name}-server.service
 %endif
 
