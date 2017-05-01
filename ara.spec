@@ -18,7 +18,8 @@ Source3:        ara.logrotate
 BuildArch:      noarch
 
 %{?systemd_requires}
-BuildRequires: systemd
+BuildRequires:  systemd
+BuildRequires:  git
 
 Requires:       python2-%{package_name} = %{version}-%{release}
 Requires:       %{package_name}-common = %{version}-%{release}
@@ -32,9 +33,6 @@ understand and troubleshoot. It integrates with Ansible wherever you run it.
 %if 0%{?with_python3}
 %package -n %{package_name}-python3
 Summary:        %{summary}
-
-%{?systemd_requires}
-BuildRequires: systemd
 
 Requires:       python3-%{package_name} = %{version}-%{release}
 Requires:       %{package_name}-common = %{version}-%{release}
@@ -52,40 +50,35 @@ Summary:        %{summary}
 BuildRequires:  python2-devel
 BuildRequires:  python2-pbr
 BuildRequires:  python2-setuptools
-BuildRequires:  gcc
-BuildRequires:  libffi-devel
-BuildRequires:  openssl-devel
-BuildRequires:  redhat-rpm-config
-BuildRequires:  git
 # Test dependencies for %check
 BuildRequires:  ansible >= 2.1.5.0
-BuildRequires:  python-cliff
 BuildRequires:  python2-debtcollector
-BuildRequires:  python2-decorator >= 4.0.0
+BuildRequires:  python2-decorator
 BuildRequires:  python2-flask
 BuildRequires:  python2-flask-migrate
-BuildRequires:  python-flask-script
-BuildRequires:  python-frozen-flask
 BuildRequires:  python2-junit_xml
 BuildRequires:  python2-lxml
+# BuildRequires:  python2-pyfakefs # https://bugzilla.redhat.com/show_bug.cgi?id=1447120
 BuildRequires:  python2-pygments
+BuildRequires:  python2-pytest
 BuildRequires:  python2-sqlalchemy
 BuildRequires:  python2-XStatic
 BuildRequires:  python2-XStatic-Bootstrap-SCSS
 BuildRequires:  python2-XStatic-DataTables
 BuildRequires:  python2-XStatic-jQuery
 BuildRequires:  python2-XStatic-Patternfly
-BuildRequires:  python2-pytest
+# BuildRequires:  python2-XStatic-Patternfly-Bootstrap-Treeview # https://bugzilla.redhat.com/show_bug.cgi?id=1447089
+BuildRequires:  python-cliff
+BuildRequires:  python-flask-script
+BuildRequires:  python-frozen-flask
 
 Requires:       ansible >= 2.1.5.0
-Requires:       python-cliff
 Requires:       python2-debtcollector
-Requires:       python2-decorator >= 4.0.0
+Requires:       python2-decorator
 Requires:       python2-flask
 Requires:       python2-flask-migrate
-Requires:       python-flask-script
-Requires:       python-frozen-flask
 Requires:       python2-junit_xml
+# Requires:       python2-pyfakefs # https://bugzilla.redhat.com/show_bug.cgi?id=1447120
 Requires:       python2-pygments
 Requires:       python2-sqlalchemy
 Requires:       python2-XStatic
@@ -93,6 +86,10 @@ Requires:       python2-XStatic-Bootstrap-SCSS
 Requires:       python2-XStatic-DataTables
 Requires:       python2-XStatic-jQuery
 Requires:       python2-XStatic-Patternfly
+# Requires:       python2-XStatic-Patternfly-Bootstrap-Treeview # https://bugzilla.redhat.com/show_bug.cgi?id=1447089
+Requires:       python-cliff
+Requires:       python-flask-script
+Requires:       python-frozen-flask
 
 %{?python_provide:%python_provide python2-%{package_name}}
 
@@ -124,40 +121,38 @@ Summary:        %{summary}
 BuildRequires:  python3-devel
 BuildRequires:  python3-pbr
 BuildRequires:  python3-setuptools
-BuildRequires:  gcc
-BuildRequires:  libffi-devel
-BuildRequires:  openssl-devel
-BuildRequires:  redhat-rpm-config
-BuildRequires:  git
 # Test dependencies for %check
 BuildRequires:  ansible-python3 >= 2.1.5.0
 BuildRequires:  python3-cliff
 BuildRequires:  python3-debtcollector
-BuildRequires:  python3-decorator >= 4.0.0
+BuildRequires:  python3-decorator
 BuildRequires:  python3-flask
 BuildRequires:  python3-flask-migrate
 BuildRequires:  python3-flask-script
 BuildRequires:  python3-frozen-flask
 BuildRequires:  python3-junit_xml
 BuildRequires:  python3-lxml
+# BuildRequires:  python3-pyfakefs # https://bugzilla.redhat.com/show_bug.cgi?id=1447120
 BuildRequires:  python3-pygments
+BuildRequires:  python3-pytest
 BuildRequires:  python3-sqlalchemy
 BuildRequires:  python3-XStatic
 BuildRequires:  python3-XStatic-Bootstrap-SCSS
 BuildRequires:  python3-XStatic-DataTables
 BuildRequires:  python3-XStatic-jQuery
 BuildRequires:  python3-XStatic-Patternfly
-BuildRequires:  python3-pytest
+# BuildRequires:  python3-XStatic-Patternfly-Bootstrap-Treeview # https://bugzilla.redhat.com/show_bug.cgi?id=1447089
 
 Requires:       ansible-python3 >= 2.1.5.0
 Requires:       python3-cliff
 Requires:       python3-debtcollector
-Requires:       python3-decorator >= 4.0.0
+Requires:       python3-decorator
 Requires:       python3-flask
 Requires:       python3-flask-migrate
 Requires:       python3-flask-script
 Requires:       python3-frozen-flask
 Requires:       python3-junit_xml
+# Requires:       python3-pyfakefs # https://bugzilla.redhat.com/show_bug.cgi?id=1447120
 Requires:       python3-pygments
 Requires:       python3-sqlalchemy
 Requires:       python3-XStatic
@@ -165,6 +160,7 @@ Requires:       python3-XStatic-Bootstrap-SCSS
 Requires:       python3-XStatic-DataTables
 Requires:       python3-XStatic-jQuery
 Requires:       python3-XStatic-Patternfly
+# Requires:       python3-XStatic-Patternfly-Bootstrap-Treeview # https://bugzilla.redhat.com/show_bug.cgi?id=1447089
 
 %{?python_provide:%python_provide python3-%{package_name}}
 
