@@ -10,8 +10,7 @@ Summary:        ARA: Ansible Analysis - Record and visualize Ansible Playbook ru
 
 License:        ASL 2.0
 URL:            https://git.openstack.org/cgit/openstack/ara
-Source0:        https://dmsimard.com/%{package_name}-%{version}.tar.gz
-#Source0:        https://pypi.io/packages/source/a/%{package_name}/%{package_name}-%{version}.tar.gz
+Source0:        https://pypi.io/packages/source/a/%{package_name}/%{package_name}-%{version}.tar.gz
 Source1:        ara-server.service
 Source2:        ara.cfg
 Source3:        ara.logrotate
@@ -58,7 +57,7 @@ BuildRequires:  python2-flask
 BuildRequires:  python2-flask-migrate
 BuildRequires:  python2-junit_xml
 BuildRequires:  python2-lxml
-# BuildRequires:  python2-pyfakefs # https://bugzilla.redhat.com/show_bug.cgi?id=1447120
+BuildRequires:  python2-pyfakefs
 BuildRequires:  python2-pygments
 BuildRequires:  python2-pytest
 BuildRequires:  python2-sqlalchemy
@@ -67,7 +66,7 @@ BuildRequires:  python2-XStatic-Bootstrap-SCSS
 BuildRequires:  python2-XStatic-DataTables
 BuildRequires:  python2-XStatic-jQuery
 BuildRequires:  python2-XStatic-Patternfly
-# BuildRequires:  python2-XStatic-Patternfly-Bootstrap-Treeview # https://bugzilla.redhat.com/show_bug.cgi?id=1447089
+BuildRequires:  python2-XStatic-Patternfly-Bootstrap-Treeview
 BuildRequires:  python-cliff
 BuildRequires:  python-flask-script
 BuildRequires:  python-frozen-flask
@@ -78,7 +77,7 @@ Requires:       python2-decorator
 Requires:       python2-flask
 Requires:       python2-flask-migrate
 Requires:       python2-junit_xml
-# Requires:       python2-pyfakefs # https://bugzilla.redhat.com/show_bug.cgi?id=1447120
+Requires:       python2-pyfakefs
 Requires:       python2-pygments
 Requires:       python2-sqlalchemy
 Requires:       python2-XStatic
@@ -86,7 +85,7 @@ Requires:       python2-XStatic-Bootstrap-SCSS
 Requires:       python2-XStatic-DataTables
 Requires:       python2-XStatic-jQuery
 Requires:       python2-XStatic-Patternfly
-# Requires:       python2-XStatic-Patternfly-Bootstrap-Treeview # https://bugzilla.redhat.com/show_bug.cgi?id=1447089
+Requires:       python2-XStatic-Patternfly-Bootstrap-Treeview
 Requires:       python-cliff
 Requires:       python-flask-script
 Requires:       python-frozen-flask
@@ -132,7 +131,7 @@ BuildRequires:  python3-flask-script
 BuildRequires:  python3-frozen-flask
 BuildRequires:  python3-junit_xml
 BuildRequires:  python3-lxml
-# BuildRequires:  python3-pyfakefs # https://bugzilla.redhat.com/show_bug.cgi?id=1447120
+BuildRequires:  python3-pyfakefs
 BuildRequires:  python3-pygments
 BuildRequires:  python3-pytest
 BuildRequires:  python3-sqlalchemy
@@ -141,7 +140,7 @@ BuildRequires:  python3-XStatic-Bootstrap-SCSS
 BuildRequires:  python3-XStatic-DataTables
 BuildRequires:  python3-XStatic-jQuery
 BuildRequires:  python3-XStatic-Patternfly
-# BuildRequires:  python3-XStatic-Patternfly-Bootstrap-Treeview # https://bugzilla.redhat.com/show_bug.cgi?id=1447089
+BuildRequires:  python3-XStatic-Patternfly-Bootstrap-Treeview
 
 Requires:       ansible-python3 >= 2.1.5.0
 Requires:       python3-cliff
@@ -152,7 +151,7 @@ Requires:       python3-flask-migrate
 Requires:       python3-flask-script
 Requires:       python3-frozen-flask
 Requires:       python3-junit_xml
-# Requires:       python3-pyfakefs # https://bugzilla.redhat.com/show_bug.cgi?id=1447120
+Requires:       python3-pyfakefs
 Requires:       python3-pygments
 Requires:       python3-sqlalchemy
 Requires:       python3-XStatic
@@ -160,7 +159,7 @@ Requires:       python3-XStatic-Bootstrap-SCSS
 Requires:       python3-XStatic-DataTables
 Requires:       python3-XStatic-jQuery
 Requires:       python3-XStatic-Patternfly
-# Requires:       python3-XStatic-Patternfly-Bootstrap-Treeview # https://bugzilla.redhat.com/show_bug.cgi?id=1447089
+Requires:       python3-XStatic-Patternfly-Bootstrap-Treeview
 
 %{?python_provide:%python_provide python3-%{package_name}}
 
@@ -338,5 +337,5 @@ exit 0
 %license LICENSE
 
 %changelog
-* Mon May 1 2017 David Moreau Simard <dmsimard@redhat.com> - 0.13.0-1
+* Mon May 8 2017 David Moreau Simard <dmsimard@redhat.com> - 0.13.0-1
 - First packaged version of ARA
