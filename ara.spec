@@ -55,6 +55,7 @@ BuildRequires:  python2-debtcollector
 BuildRequires:  python2-decorator
 BuildRequires:  python2-flask
 BuildRequires:  python2-flask-migrate
+BuildRequires:  python2-jinja2 >= 2.9
 BuildRequires:  python2-junit_xml
 BuildRequires:  python2-lxml
 BuildRequires:  python2-pyfakefs
@@ -76,6 +77,7 @@ Requires:       python2-debtcollector
 Requires:       python2-decorator
 Requires:       python2-flask
 Requires:       python2-flask-migrate
+Requires:       python2-jinja2 >= 2.9
 Requires:       python2-junit_xml
 Requires:       python2-pyfakefs
 Requires:       python2-pygments
@@ -129,6 +131,7 @@ BuildRequires:  python3-flask
 BuildRequires:  python3-flask-migrate
 BuildRequires:  python3-flask-script
 BuildRequires:  python3-frozen-flask
+BuildRequires:  python3-jinja2 >= 2.9
 BuildRequires:  python3-junit_xml
 BuildRequires:  python3-lxml
 BuildRequires:  python3-pyfakefs
@@ -150,6 +153,7 @@ Requires:       python3-flask
 Requires:       python3-flask-migrate
 Requires:       python3-flask-script
 Requires:       python3-frozen-flask
+Requires:       python3-jinja2 >= 2.9
 Requires:       python3-junit_xml
 Requires:       python3-pyfakefs
 Requires:       python3-pygments
